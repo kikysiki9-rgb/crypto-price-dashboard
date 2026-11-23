@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -11,27 +11,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          node-version: '20'
-
-      - name: Prepare web assets
-        run: mkdir -p www && cp index.html www/
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Add Android platform
-        run: npx cordova platform add android
-
-      - name: Build debug APK
-        run: npx cordova build android
-
+          distribution: temurin
+          java-version: '17'
+      - name: Build APK
+        run: gradle assembleDebug --no-daemon
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: crypto-price-dashboard-debug-apk
-          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+          name: crypto-dashboard-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
