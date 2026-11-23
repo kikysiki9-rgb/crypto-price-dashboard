@@ -1,12 +1,12 @@
 {
   "name": "crypto-price-dashboard",
   "version": "1.0.0",
-  "description": "Crypto price dashboard packaged as an Android app with Cordova",
   "private": true,
+  "description": "Crypto price dashboard Android app",
   "scripts": {
     "build:android": "cordova build android"
   },
-  "devDependencies": {
+  "dependencies": {
     "cordova": "^12.0.0",
     "cordova-android": "^13.0.0"
   }
