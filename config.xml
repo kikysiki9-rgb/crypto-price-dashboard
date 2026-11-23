@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="com.kikysiki9rgb.cryptoprice" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
+  <name>Crypto Price Dashboard</name>
+  <description>Проверка цен популярных криптовалют</description>
+  <content src="index.html" />
+  <access origin="*" />
+  <allow-intent href="http://*/*" />
+  <allow-intent href="https://*/*" />
+  <preference name="AndroidXEnabled" value="true" />
+  <preference name="DisallowOverscroll" value="true" />
+  <platform name="android">
+    <allow-intent href="market:*" />
+  </platform>
+</widget>
