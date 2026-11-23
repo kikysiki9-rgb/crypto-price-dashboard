@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Pulse — цены криптовалют</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f5f7ff;background:#090b16;line-height:1.5}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0%,#273174 0,#11132b 35%,#090b16 70%)}
+    .wrap{width:min(1100px,calc(100% - 32px));margin:auto;padding:46px 0 64px}.hero{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:34px}
+    .eyebrow{color:#91a2ff;text-transform:uppercase;letter-spacing:.15em;font-weight:700;font-size:.75rem}.hero h1{font-size:clamp(2.2rem,6vw,4.5rem);line-height:1.02;margin:10px 0 14px;letter-spacing:-.06em}.hero p{color:#a8acc4;margin:0;max-width:590px;font-size:1.05rem}
+    .button{border:0;border-radius:14px;background:linear-gradient(135deg,#7c5cff,#39c8ff);color:white;font-size:1rem;font-weight:800;padding:15px 22px;cursor:pointer;box-shadow:0 10px 28px #4d62d34d;white-space:nowrap}.button:hover{filter:brightness(1.12);transform:translateY(-1px)}.button:disabled{opacity:.6;cursor:wait}
+    .status{display:flex;align-items:center;gap:8px;color:#8e92ad;font-size:.9rem;margin:0 0 14px}.dot{width:8px;height:8px;border-radius:50%;background:#38d39f;display:inline-block}.dot.error{background:#ff6b7a}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:#15182bce;border:1px solid #ffffff12;border-radius:20px;padding:22px;backdrop-filter:blur(14px);transition:.2s}.card:hover{border-color:#7180ff80;transform:translateY(-3px)}.card-top{display:flex;align-items:center;gap:12px}.coin-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:#5865f2}.gram{background:linear-gradient(135deg,#ff8d43,#f64f72)}.ton{background:#0098ea}.btc{background:#f7931a}.eth{background:#627eea}.usdt{background:#26a17b}.sol{background:#9945ff}.symbol{color:#8e92ad;font-size:.78rem;font-weight:800;letter-spacing:.08em}.coin-name{font-weight:700}.price{font-size:1.55rem;font-weight:800;margin:22px 0 7px;letter-spacing:-.03em}.change{font-size:.9rem;font-weight:700}.up{color:#43d6a1}.down{color:#ff7281}.muted{color:#747992}.footer{margin-top:26px;color:#737890;font-size:.8rem}.skeleton{height:180px;animation:pulse 1.2s infinite alternate;background:#191c31}@keyframes pulse{to{opacity:.45}}
+    @media(max-width:650px){.wrap{padding-top:28px}.hero{display:block}.button{margin-top:24px;width:100%}.hero h1{font-size:3rem}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div><div class="eyebrow">Crypto Pulse / live market</div><h1>Цены криптовалют<br>в одном месте.</h1><p>Актуальные котировки GRAM, TON и популярных монет. Нажмите кнопку, чтобы обновить данные с CoinGecko.</p></div>
+      <button class="button" id="refresh">Обновить цены</button>
+    </section>
+    <div class="status"><span class="dot" id="dot"></span><span id="status">Готово к обновлению</span></div>
+    <section class="grid" id="coins"></section>
+    <div class="footer">Данные предоставлены CoinGecko API. Котировки могут быть задержаны и не являются финансовой рекомендацией.</div>
+  </main>
+<script>
+  const assets=[
+    {id:'gram-coin',name:'GRAM',symbol:'GRAM',icon:'G',className:'gram'},
+    {id:'the-open-network',name:'Toncoin',symbol:'TON',icon:'T',className:'ton'},
+    {id:'bitcoin',name:'Bitcoin',symbol:'BTC',icon:'₿',className:'btc'},
+    {id:'ethereum',name:'Ethereum',symbol:'ETH',icon:'◆',className:'eth'},
+    {id:'tether',name:'Tether',symbol:'USDT',icon:'₮',className:'usdt'},
+    {id:'solana',name:'Solana',symbol:'SOL',icon:'≋',className:'sol'}
+  ];
+  const coins=document.querySelector('#coins'), status=document.querySelector('#status'), dot=document.querySelector('#dot'), button=document.querySelector('#refresh');
+  const money=value=>value==null?'—':new Intl.NumberFormat('ru-RU',{style:'currency',currency:'USD',maximumFractionDigits:value<1?6:2}).format(value);
+  function render(data={}){coins.innerHTML=assets.map(a=>{const d=data[a.id]||{}, change=d.usd_24h_change; return `<article class="card"><div class="card-top"><div class="coin-icon ${a.className}">${a.icon}</div><div><div class="coin-name">${a.name}</div><div class="symbol">${a.symbol}</div></div></div><div class="price">${money(d.usd)}</div><div class="change ${change>=0?'up':'down'}">${change==null?'Нет данных':`${change>=0?'▲':'▼'} ${Math.abs(change).toFixed(2)}% за 24 ч.`}</div></article>`}).join('')}
+  async function load(){button.disabled=true; status.textContent='Загружаем свежие котировки…';dot.className='dot';coins.innerHTML=assets.map(()=>'<div class="card skeleton"></div>').join(''); try{const ids=assets.map(a=>a.id).join(',');const res=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);if(!res.ok)throw Error();render(await res.json());status.textContent=`Обновлено: ${new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}`}catch(e){render();status.textContent='Не удалось загрузить данные. Попробуйте ещё раз.';dot.className='dot error'}finally{button.disabled=false}}
+  render();button.addEventListener('click',load);
+</script>
+</body>
+</html>
