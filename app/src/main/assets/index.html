@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crypto Price Dashboard</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#10121a;color:#fff;padding:24px}h1{margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.card{background:#1b1f2b;border-radius:16px;padding:18px;box-shadow:0 4px 15px #0004}.symbol{color:#aeb6cc;font-size:14px}.price{font-size:25px;margin:12px 0}.change{color:#45d483}.negative{color:#ff6875}button{background:#6750a4;border:0;border-radius:10px;padding:12px 18px;color:white;font-size:16px;margin-bottom:20px}#status{color:#aeb6cc;margin-left:10px}
+</style></head><body><h1>Crypto prices</h1><button id="refresh">Обновить цены</button><span id="status"></span><div class="grid" id="coins"></div>
+<script>
+const coins=[['gram','GRAM'],['the-open-network','TON'],['bitcoin','BTC'],['ethereum','ETH'],['tether','USDT'],['solana','SOL']];
+async function load(){const status=document.getElementById('status');status.textContent='Загрузка…';try{const ids=coins.map(x=>x[0]).join(',');const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+ids+'&vs_currencies=usd&include_24hr_change=true');const d=await r.json();document.getElementById('coins').innerHTML=coins.map(([id,name])=>{const c=d[id]||{};const ch=c.usd_24h_change||0;return `<div class="card"><b>${name}</b><div class="symbol">${id}</div><div class="price">$${c.usd?.toLocaleString()||'—'}</div><div class="${ch<0?'negative':'change'}">${ch.toFixed(2)}%</div></div>`}).join('');status.textContent='Обновлено';}catch(e){status.textContent='Ошибка загрузки';}}document.getElementById('refresh').onclick=load;load();
+</script></body></html>
