@@ -8,6 +8,6 @@
     <allow-navigation href="https://*/*" />
     <allow-navigation href="http://*/*" />
     <preference name="AndroidXEnabled" value="true" />
-    <preference name="android-minSdkVersion" value="고" />
+    <preference name="android-minSdkVersion" value="22" />
     <platform name="android" />
 </widget>
